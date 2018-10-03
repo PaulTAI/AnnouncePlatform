@@ -84,11 +84,19 @@ class Advert
      *
      * @return \DateTime
      */
+
+    public function __construct()
+    {
+        $this->date = new \Datetime();
+        $this->publication = true;
+    }
+
     public function getDate()
     {
         return $this->date;
     }
 
+    
     /**
      * Set title
      *
