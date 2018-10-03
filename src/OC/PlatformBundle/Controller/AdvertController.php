@@ -60,6 +60,7 @@ class AdvertController extends Controller
   {
     // On fixe en dur une liste ici, bien entendu par la suite
     // on la récupérera depuis la BDD !
+    // second commit
     $listAdverts = array(
       array('id' => 2, 'title' => 'Recherche développeur Symfony'),
       array('id' => 5, 'title' => 'Mission de webmaster'),
