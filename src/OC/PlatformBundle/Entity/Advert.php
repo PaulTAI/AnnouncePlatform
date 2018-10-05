@@ -2,6 +2,7 @@
 
 namespace OC\PlatformBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -16,11 +17,6 @@ use Doctrine\ORM\Mapping as ORM;
   */
 class Advert
 {
-    /**
-     * @ORM\OneToOne(targetEntity="OC\PlatformBundle\Entity\Image", cascade={"persist"})
-     */
-    private $image;
-
     /**
      * @var int
      *
@@ -63,6 +59,21 @@ class Advert
      */
     private $content;
 
+    /**
+     * @ORM\OneToOne(targetEntity="OC\PlatformBundle\Entity\Image", cascade={"persist"})
+     * @ORM\JoinTable(name="oc_advert_category")
+     */
+    private $image;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="OC\PlatformBundle\Entity\Category", cascade={"persist"})
+     */
+    private $categories;
+
+    /**
+     * @ORM\OneToMany(targetEntity="OC\PlatformBundle\Entity\Application", mappedBy="advert")
+     */
+    private $applications;
 
     /**
      * Get id
@@ -94,18 +105,11 @@ class Advert
      * @return \DateTime
      */
 
-    public function __construct()
-    {
-        $this->date = new \Datetime();
-        $this->publication = true;
-    }
-
     public function getDate()
     {
         return $this->date;
     }
 
-    
     /**
      * Set title
      *
@@ -224,5 +228,68 @@ class Advert
     public function getImage()
     {
         return $this->image;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->categories = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->date = new \Datetime();
+        $this->publication = true;
+    }
+
+    /**
+     * Add category.
+     *
+     * @param \OC\PlatformBundle\Entity\Category $category
+     *
+     * @return Advert
+     */
+    public function addCategory(\OC\PlatformBundle\Entity\Category $category)
+    {
+        $this->categories[] = $category;
+
+        return $this;
+    }
+
+    /**
+     * Remove category.
+     *
+     * @param \OC\PlatformBundle\Entity\Category $category
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeCategory(\OC\PlatformBundle\Entity\Category $category)
+    {
+        return $this->categories->removeElement($category);
+    }
+
+    /**
+     * Get categories.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getCategories()
+    {
+        return $this->categories;
+    }
+
+    public function addApplication(Application $application)
+   {
+        $this->applications[] = $application;
+
+        // On lie l'annonce à la candidature
+        $application->setAdvert($this);
+
+        return $this;
+   }
+    
+    public function removeApplication(Application $application)
+    {
+        $this->applications->removeElement($application);
+
+        // Et si notre relation était facultative (nullable=true, ce qui n'est pas notre cas ici attention) :        
+        // $application->setAdvert(null);
     }
 }
